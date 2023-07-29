@@ -42,3 +42,30 @@ Foreach ($defid in $Definitionids) {
         $latest_build_hash = $release_get_response.buildNumber
 
 
+        # Step 3
+        # Input build hash
+        DO {$build_hash = read-host -prompt "`r`n Latest Build No: $latest_build_hash | Input your build number"
+
+            $requestBody_get = @{
+            }
+            $requestBodyJson_get = $requestBody_get | ConvertTo-Json
+
+            $uri_get_build_id = "https://dev.azure.com/$($OrganizationName)/$($Projectid)/_apis/build/builds?buildNumber=$($build_hash)&api-version=7.0"
+            $release_get_response = Invoke-RestMethod -Uri $uri_get_build_id -Method get -body $requestBodyJson_get -Headers $AzureDevOpsAuthenicationHeader -ContentType 'application/json' 
+
+
+            $response_filter_definition = $release_get_response.value | where { ($_.definition.name -eq $($ReleaseDefs[$counter]))}
+            $build_id = $response_filter_definition.id 
+
+        } While ([string]::IsNullOrEmpty($build_id))
+
+
+        Write-Color -Text "`r`n Approval: ", "Approved `r`n" -Color Gray,Green
+
+    }else {
+        Write-Color -Text "`r`n Release MS : ", "$($ReleaseDefs[$counter]) ", " | ENV : " ," $RelaseEnvName ", " | Status: ", "Cancelled `r`n" -Color Gray,Blue,Gray,Yellow,Gray,Red
+        $counter += 1
+        "-"*100 | Write-Host
+        continue
+    }
+
