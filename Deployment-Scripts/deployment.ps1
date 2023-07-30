@@ -69,3 +69,13 @@ Foreach ($defid in $Definitionids) {
         continue
     }
 
+    # Step 4
+    # Create Release by Azure CLI command for the given release definition and build hash
+    $release_response = az pipelines release create --org https://dev.azure.com/$OrganizationName --project $Projectid --definition-id=$defid --artifact-metadata-list "$($ReleaseDefs[$counter])=$($build_id)" | ConvertFrom-Json
+    $counter += 1
+
+    # Get release ID
+    $Releaseid = $release_response.id 
+
+    # Get release environment(stage) ID of the desired deployment environment(stage)
+    foreach($env in $release_response.environments) {if ($env.name -eq $RelaseEnvName) { $env_id = $env.id}}
