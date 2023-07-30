@@ -1,0 +1,2 @@
+## About The Project
+This project is built in order automate Azure deployments in release pipelines with one command to shorten manual UI work on Azure DevOps. The project consist of one bash script `pre-deploy.sh` to determine deployable micro-services for the git branch and Azure release environment that is input by user and one powershell script `deployment.ps1` to deploy code to desired release pipeline by utilising Azure API.
