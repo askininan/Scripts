@@ -79,3 +79,15 @@ Foreach ($defid in $Definitionids) {
 
     # Get release environment(stage) ID of the desired deployment environment(stage)
     foreach($env in $release_response.environments) {if ($env.name -eq $RelaseEnvName) { $env_id = $env.id}}
+
+    # Step 5
+    # Patch to deploy to desired environment(stage)
+    $requestBody_patch = @{
+        "status"= "inProgress";
+        }
+    $requestBodyJson_patch = $requestBody_patch | ConvertTo-Json
+
+    $uri_patch_stage = "https://vsrm.dev.azure.com/$($OrganizationName)/$($Projectid)/_apis/release/releases/$($Releaseid)/environments/$($env_id)?api-version=7.0"
+    $release_patch_response = Invoke-RestMethod -Uri $uri_patch_stage -Method patch -body $requestBodyJson_patch -Headers $AzureDevOpsAuthenicationHeader -ContentType 'application/json' 
+
+    Start-Sleep -Seconds 2 # This is required to wait until desired deployment stage to be patched for deployment
