@@ -91,3 +91,17 @@ Foreach ($defid in $Definitionids) {
     $release_patch_response = Invoke-RestMethod -Uri $uri_patch_stage -Method patch -body $requestBodyJson_patch -Headers $AzureDevOpsAuthenicationHeader -ContentType 'application/json' 
 
     Start-Sleep -Seconds 2 # This is required to wait until desired deployment stage to be patched for deployment
+
+
+    # Step 6
+    # Get Approval Response of the release created
+    $requestBody_approval_get= @{
+    }
+    $requestBody_approval = $requestBody_approval_get | ConvertTo-Json
+    $uri_approval_get = "https://vsrm.dev.azure.com/$($OrganizationName)/$($Projectid)/_apis/release/approvals?releaseIdsFilter=$($Releaseid)&api-version=7.0"
+    $list_approval_response = Invoke-RestMethod -Uri $uri_approval_get -Method get -body $requestBody_approval -Headers $AzureDevOpsAuthenicationHeader -ContentType 'application/json'
+
+    # Get approval ID that is equal to the desired deployment environment(stage)
+    $list_approval_response.value | foreach {if ($_.releaseEnvironment.name -eq $RelaseEnvName) { $appr_id = $_.id}}
+
+    Start-Sleep -Seconds 1
