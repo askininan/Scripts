@@ -105,3 +105,7 @@ Foreach ($defid in $Definitionids) {
     $list_approval_response.value | foreach {if ($_.releaseEnvironment.name -eq $RelaseEnvName) { $appr_id = $_.id}}
 
     Start-Sleep -Seconds 1
+
+    # Step 7
+    # Approve desired stage to be deployed
+    $deploymentApprovementbody_json = $deploymentApprovementbody | ConvertTo-Json
