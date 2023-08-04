@@ -111,3 +111,8 @@ Foreach ($defid in $Definitionids) {
     $deploymentApprovementbody_json = $deploymentApprovementbody | ConvertTo-Json
     $deploymentApprovementuri = "https://vsrm.dev.azure.com/$($OrganizationName)/$($Projectid)/_apis/release/approvals/$($appr_id)?api-version=7.0"
     $deployment_approval_response = Invoke-RestMethod -Uri $deploymentApprovementuri -Method patch -body $deploymentApprovementbody_json -Headers $AzureDevOpsAuthenicationHeader -ContentType 'application/json'
+
+    # Step 8
+    # Get approval IDs of that are not equal to the desired deployment environment(stage) and reject anything else that is not the desired deployment stage
+    $envRejectionids = @()
+    $list_approval_response.value | foreach {if ($_.releaseEnvironment.name -ne $RelaseEnvName) { $envRejectionids += $_.id}}
