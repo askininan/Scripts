@@ -109,3 +109,5 @@ Foreach ($defid in $Definitionids) {
     # Step 7
     # Approve desired stage to be deployed
     $deploymentApprovementbody_json = $deploymentApprovementbody | ConvertTo-Json
+    $deploymentApprovementuri = "https://vsrm.dev.azure.com/$($OrganizationName)/$($Projectid)/_apis/release/approvals/$($appr_id)?api-version=7.0"
+    $deployment_approval_response = Invoke-RestMethod -Uri $deploymentApprovementuri -Method patch -body $deploymentApprovementbody_json -Headers $AzureDevOpsAuthenicationHeader -ContentType 'application/json'
